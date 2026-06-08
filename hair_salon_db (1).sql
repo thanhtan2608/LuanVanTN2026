@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1:3306
--- Thời gian đã tạo: Th6 03, 2026 lúc 11:32 AM
+-- Thời gian đã tạo: Th6 06, 2026 lúc 12:07 PM
 -- Phiên bản máy phục vụ: 5.7.31
 -- Phiên bản PHP: 7.3.21
 
@@ -97,6 +97,8 @@ CREATE TABLE IF NOT EXISTS `branches` (
   `address` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `phone` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_deleted` tinyint(1) DEFAULT '0',
+  `is_active` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -112,6 +114,8 @@ CREATE TABLE IF NOT EXISTS `categories` (
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `type` enum('SERVICE','PRODUCT') COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_deleted` tinyint(1) DEFAULT '0',
+  `is_active` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -147,6 +151,8 @@ CREATE TABLE IF NOT EXISTS `hairstyles` (
   `image_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `description` text COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_deleted` tinyint(1) DEFAULT '0',
+  `is_active` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -275,6 +281,8 @@ CREATE TABLE IF NOT EXISTS `products` (
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `stock_quantity` int(11) DEFAULT '0',
+  `is_deleted` tinyint(1) DEFAULT '0',
+  `is_active` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `category_id` (`category_id`),
   KEY `branch_id` (`branch_id`)
@@ -315,6 +323,8 @@ CREATE TABLE IF NOT EXISTS `services` (
   `price` decimal(10,2) NOT NULL,
   `duration_minutes` int(11) NOT NULL,
   `image_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_deleted` tinyint(1) DEFAULT '0',
+  `is_active` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `category_id` (`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -354,6 +364,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `member_tier` enum('NEW','SILVER','GOLD','DIAMOND') COLLATE utf8mb4_unicode_ci DEFAULT 'NEW',
   `commission_rate` decimal(5,2) DEFAULT '0.00',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_deleted` tinyint(1) DEFAULT '0',
+  `is_active` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `phone` (`phone`),
   KEY `branch_id` (`branch_id`)
