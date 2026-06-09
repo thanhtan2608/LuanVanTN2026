@@ -21,6 +21,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final ITokenBlacklistRepository tokenBlacklistRepository;
     // UserDetailsService sẽ được implement ở module Users sau
     private final UserDetailsService userDetailsService;
 
@@ -41,7 +42,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        jwt = authHeader.substring(7); // Cắt bỏ chữ "Bearer "
+        jwt = authHeader.substring(7);
+        if (tokenBlacklistRepository.isBlacklisted(jwt)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token đã bị vô hiệu hóa!");
+            return;
+        }// Cắt bỏ chữ "Bearer "
 
         try {
             userPhone = jwtUtil.extractUsername(jwt);

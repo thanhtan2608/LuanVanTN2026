@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1:3306
--- Thời gian đã tạo: Th6 06, 2026 lúc 12:07 PM
+-- Thời gian đã tạo: Th6 09, 2026 lúc 03:04 PM
 -- Phiên bản máy phục vụ: 5.7.31
 -- Phiên bản PHP: 7.3.21
 
@@ -96,6 +96,8 @@ CREATE TABLE IF NOT EXISTS `branches` (
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `address` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `phone` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `open_time` time NOT NULL DEFAULT '08:00:00',
+  `close_time` time NOT NULL DEFAULT '21:00:00',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `is_deleted` tinyint(1) DEFAULT '0',
   `is_active` tinyint(1) DEFAULT '1',
@@ -209,6 +211,29 @@ CREATE TABLE IF NOT EXISTS `invoice_items` (
   `subtotal` decimal(10,2) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `invoice_id` (`invoice_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `lookbook_items`
+--
+
+DROP TABLE IF EXISTS `lookbook_items`;
+CREATE TABLE IF NOT EXISTS `lookbook_items` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `image_url` varchar(512) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `gender` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `prompt` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hairstyle_id` bigint(20) DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT '1',
+  `is_deleted` tinyint(1) DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `title` (`title`),
+  KEY `fk_lookbook_hairstyle` (`hairstyle_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -369,6 +394,36 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `phone` (`phone`),
   KEY `branch_id` (`branch_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `users`
+--
+
+INSERT INTO `users` (`id`, `phone`, `password`, `full_name`, `role`, `branch_id`, `points`, `member_tier`, `commission_rate`, `created_at`, `is_deleted`, `is_active`) VALUES
+(1, '0999999999', '$2a$10$1UlgzPwu7D6xWPwEdVjjNubZal5QwAquoc6HlN.IvrhS/XEJoP8f.', 'Super Admin', 'ADMIN', NULL, 0, 'NEW', '0.00', '2026-06-08 11:03:39', 0, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `user_ai_styles`
+--
+
+DROP TABLE IF EXISTS `user_ai_styles`;
+CREATE TABLE IF NOT EXISTS `user_ai_styles` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) NOT NULL,
+  `lookbook_item_id` bigint(20) NOT NULL,
+  `source_image_url` varchar(512) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `result_image_url` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `error_message` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `completed_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_ai_style_lookbook` (`lookbook_item_id`),
+  KEY `idx_user_ai_styles_user` (`user_id`),
+  KEY `idx_user_ai_styles_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -426,6 +481,12 @@ ALTER TABLE `invoice_items`
   ADD CONSTRAINT `invoice_items_ibfk_1` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE;
 
 --
+-- Các ràng buộc cho bảng `lookbook_items`
+--
+ALTER TABLE `lookbook_items`
+  ADD CONSTRAINT `fk_lookbook_hairstyle` FOREIGN KEY (`hairstyle_id`) REFERENCES `hairstyles` (`id`) ON DELETE SET NULL;
+
+--
 -- Các ràng buộc cho bảng `notifications`
 --
 ALTER TABLE `notifications`
@@ -469,6 +530,13 @@ ALTER TABLE `shifts`
 --
 ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL;
+
+--
+-- Các ràng buộc cho bảng `user_ai_styles`
+--
+ALTER TABLE `user_ai_styles`
+  ADD CONSTRAINT `fk_ai_style_lookbook` FOREIGN KEY (`lookbook_item_id`) REFERENCES `lookbook_items` (`id`),
+  ADD CONSTRAINT `fk_ai_style_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
