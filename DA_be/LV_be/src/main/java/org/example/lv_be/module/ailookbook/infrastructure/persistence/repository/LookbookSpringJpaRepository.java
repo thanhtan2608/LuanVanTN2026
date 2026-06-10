@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface LookbookSpringJpaRepository extends JpaRepository<LookbookJpaEntity, Long> {
 
-    List<LookbookJpaEntity> findByIsActiveTrue();
+    List<LookbookJpaEntity> findByActiveTrue();
 
     boolean existsByTitle(String title);
 

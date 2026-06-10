@@ -25,7 +25,7 @@ public class LookbookRepositoryImpl implements ILookbookRepository {
 
     @Override
     public List<LookbookItem> findAllActive() {
-        return jpaRepository.findByIsActiveTrue().stream()
+        return jpaRepository.findByActiveTrue().stream()
                 .map(mapper::toDomainEntity)
                 .toList();
     }

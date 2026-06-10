@@ -17,8 +17,8 @@ public class LookbookItem {
     private GenderCategory gender;
     private String prompt;      // Câu lệnh cấu hình cho AI lồng ghép mẫu tóc này
     private Long hairstyleId;   // CẦU NỐI THỰC TẾ: Trỏ sang kiểu tóc thực tế tại tiệm (Ví dụ: Layer, Undercut)
-    private boolean isActive;
-    private boolean isDeleted;
+    private boolean active;
+    private boolean deleted;
     private LocalDateTime createdAt;
 
     // ==========================================
@@ -26,11 +26,11 @@ public class LookbookItem {
     // ==========================================
 
     public void activate() {
-        this.isActive = true;
+        this.active = true;
     }
 
     public void deactivate() {
-        this.isActive = false;
+        this.active = false;
     }
 
     /**

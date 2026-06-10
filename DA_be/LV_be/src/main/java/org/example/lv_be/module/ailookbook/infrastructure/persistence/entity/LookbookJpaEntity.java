@@ -43,10 +43,11 @@ public class LookbookJpaEntity {
     private Long hairstyleId;
 
     @Column(name = "is_active", nullable = false)
-    private boolean isActive = true;
+    private boolean active = true;
 
+    // Đổi tên biến từ isDeleted -> deleted
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
+    private boolean deleted = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
