@@ -6,5 +6,6 @@ public enum BookingStatus {
     CHECKED_IN,   // Khách đã đến
     IN_PROGRESS,  // Đang phục vụ
     COMPLETED,    // Đã hoàn thành (Đã thanh toán)
-    CANCELLED     // Đã hủy
+    CANCELLED,// Đã hủy
+    NO_SHOW
 }
