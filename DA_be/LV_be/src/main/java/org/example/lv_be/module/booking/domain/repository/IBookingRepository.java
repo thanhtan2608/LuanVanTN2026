@@ -19,5 +19,5 @@ public interface IBookingRepository {
     List<Booking> findByBranchIdAndBookingDate(Long branchId, LocalDate bookingDate);
 
     Booking sourceSave(Booking booking);
-    
+
 }

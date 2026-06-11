@@ -14,7 +14,7 @@ public class UserProfileResponse {
     private String phone;
     private String fullName;
     private Role role;
-    private Integer points;
+    private int points;
     private MemberTier memberTier;
     private BigDecimal commissionRate;
 }
