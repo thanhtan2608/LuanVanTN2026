@@ -32,22 +32,33 @@ public class UserRepositoryImpl implements IUserRepository {
         UserJpaEntity saved = jpaRepository.save(toJpa(user));
         return toDomain(saved);
     }
+
     @Override
     public Optional<User> findById(Long id) {
-        return jpaRepository.findById(id).map(this::toDomain); // toDomainEntity nếu bạn đặt tên là toDomainEntity
+        return jpaRepository.findById(id).map(this::toDomain);
     }
 
     @Override
     public List<User> findByRoleIn(List<Role> roles) {
         return jpaRepository.findByRoleIn(roles).stream()
-                .map(this::toDomain) // toDomainEntity
+                .map(this::toDomain)
                 .toList();
     }
+
     @Override
     public Optional<User> findByPhoneIncludingDeleted(String phone) {
         return jpaRepository.findByPhoneIncludingDeleted(phone).map(this::toDomain);
     }
 
+    // Đã sửa tham số từ String thành Enum Role để khớp với Entity của bạn
+    @Override
+    public List<User> findActiveStaffsByRole(Role role) {
+        return jpaRepository.findByRoleAndIsActiveTrue(role).stream()
+                .map(this::toDomain)
+                .toList(); // Dùng .toList() cho đồng bộ với hàm findByRoleIn ở trên
+    }
+
+    // Giữ lại hàm mapper toDomain đầy đủ của bạn, xóa bỏ hàm bị trùng
     private User toDomain(UserJpaEntity entity) {
         if (entity == null) return null;
         return User.builder()

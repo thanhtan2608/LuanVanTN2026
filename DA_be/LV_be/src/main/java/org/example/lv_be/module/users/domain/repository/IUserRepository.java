@@ -18,4 +18,5 @@ public interface IUserRepository {
     Optional<User> findById(Long id);
     List<User> findByRoleIn(List<Role> roles);
     Optional<User> findByPhoneIncludingDeleted(String phone);
+    List<User> findActiveStaffsByRole(Role role);
 }

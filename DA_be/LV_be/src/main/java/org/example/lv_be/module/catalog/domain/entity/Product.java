@@ -61,6 +61,15 @@ public class Product {
         }
         this.stockQuantity += quantity;
     }
+    // 🧠 LOGIC NGHIỆP VỤ: Tăng / Giảm số lượng tồn kho an toàn
+    public void adjustStock(int quantityChange) {
+        // Nếu quantityChange là số âm (bán hàng), kiểm tra xem kho có đủ đồ không
+        if (quantityChange < 0 && (this.stockQuantity + quantityChange < 0)) {
+            throw new RuntimeException("Tồn kho không đủ! Sản phẩm '" + this.name + "' chỉ còn " + this.stockQuantity + " hộp.");
+        }
+
+        this.stockQuantity += quantityChange;
+    }
 
     public void softDelete() {
         this.deleted = true;

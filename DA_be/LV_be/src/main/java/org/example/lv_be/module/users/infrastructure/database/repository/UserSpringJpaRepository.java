@@ -14,4 +14,5 @@ public interface UserSpringJpaRepository extends JpaRepository<UserJpaEntity, Lo
     List<UserJpaEntity> findByRoleIn(List<Role> roles);
     @Query(value = "SELECT * FROM users WHERE phone = :phone", nativeQuery = true)
     Optional<UserJpaEntity> findByPhoneIncludingDeleted(@Param("phone") String phone);
+    List<UserJpaEntity> findByRoleAndIsActiveTrue(Role role);
 }
