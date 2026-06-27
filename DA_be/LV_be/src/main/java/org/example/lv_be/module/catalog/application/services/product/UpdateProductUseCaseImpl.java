@@ -11,6 +11,8 @@ import org.example.lv_be.module.catalog.domain.repository.ICategoryRepository;
 import org.example.lv_be.module.catalog.domain.repository.IProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.example.lv_be.core.storage.ICloudStorageService;
 
 @Service
 @RequiredArgsConstructor
@@ -19,10 +21,11 @@ public class UpdateProductUseCaseImpl implements IUpdateProductUseCase {
     private final IProductRepository productRepository;
     private final ICategoryRepository categoryRepository;
     private final ProductMapper productMapper;
+    private final ICloudStorageService cloudStorageService;
 
     @Override
     @Transactional
-    public ProductResponse execute(Long id, UpdateProductRequest request) {
+    public ProductResponse execute(Long id, UpdateProductRequest request, MultipartFile imageFile) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new CatalogDomainException("Không tìm thấy thông tin sản phẩm cần sửa!"));
 
@@ -33,6 +36,11 @@ public class UpdateProductUseCaseImpl implements IUpdateProductUseCase {
         product.setName(request.getName());
         product.setPrice(request.getPrice());
         product.setActive(request.isActive());
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String newUrl = cloudStorageService.uploadFile(imageFile, "products");
+            product.setImageUrl(newUrl);
+        }
 
         product.validateSelf();
         Product updatedProduct = productRepository.sourceSave(product);

@@ -16,20 +16,28 @@ public class OtpTokenRepositoryImpl implements IOtpTokenRepository {
     private final OtpTokenSpringJpaRepository jpaRepository;
 
     @Override
-    public Optional<OtpToken> findByPhoneAndOtpCodeAndIsUsedFalse(String phone, String otpCode) {
-        return jpaRepository.findByPhoneAndOtpCodeAndIsUsedFalse(phone, otpCode)
-                .map(this::toDomainEntity);
-    }
-
-    @Override
     public OtpToken save(OtpToken otpToken) {
         OtpTokenJpaEntity jpaEntity = toJpaEntity(otpToken);
         OtpTokenJpaEntity savedEntity = jpaRepository.save(jpaEntity);
         return toDomainEntity(savedEntity);
     }
 
+    // 🌟 Đã sửa lại tên hàm cho đúng với Interface
+    @Override
+    public Optional<OtpToken> findByPhoneAndOtpCodeAndIsUsedFalse(String phone, String otpCode) {
+        return jpaRepository.findByPhoneAndOtpCodeAndIsUsedFalse(phone, otpCode)
+                .map(this::toDomainEntity);
+    }
+
+    // 🌟 Đã bổ sung hàm bị thiếu từ Interface
+    @Override
+    public void invalidateAllTokensForPhone(String phone) {
+        // Gọi hàm tự định nghĩa trong SpringJpaRepository để vô hiệu hóa OTP cũ
+        jpaRepository.invalidateAllByPhone(phone);
+    }
+
     // =========================================================
-    // Các hàm Mapper chuyển đổi qua lại giữa Domain và JPA Entity
+    // Các hàm Mapper
     // =========================================================
 
     private OtpToken toDomainEntity(OtpTokenJpaEntity entity) {

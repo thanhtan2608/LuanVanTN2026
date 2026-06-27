@@ -17,6 +17,7 @@ public class Product {
     private int stockQuantity;   // int(11) -> Cột stock_quantity khớp 100% SQL
     private boolean deleted;     // tinyint(1) -> Cột is_deleted
     private boolean active;      // tinyint(1) -> Cột is_active
+    private String imageUrl;     // varchar(255) -> Cột image_url
 
     public void validateSelf() {
         if (this.name == null || this.name.isBlank()) {

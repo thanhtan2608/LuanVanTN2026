@@ -1,6 +1,6 @@
 package org.example.lv_be.module.users.infrastructure.external;
 
-import org.example.lv_be.module.users.application.interfaces.ISmsService;
+import org.example.lv_be.module.users.application.interfaces.out.ISmsService;
 import org.springframework.stereotype.Service;
 
 @Service

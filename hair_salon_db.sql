@@ -2,10 +2,10 @@
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Máy chủ: 127.0.0.1:3306
--- Thời gian đã tạo: Th6 09, 2026 lúc 03:04 PM
--- Phiên bản máy phục vụ: 5.7.31
--- Phiên bản PHP: 7.3.21
+-- Host: 127.0.0.1:3306
+-- Generation Time: Jun 25, 2026 at 03:24 PM
+-- Server version: 5.7.31
+-- PHP Version: 7.3.21
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Cơ sở dữ liệu: `hair_salon_db`
+-- Database: `hair_salon_db`
 --
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `attendances`
+-- Table structure for table `attendances`
 --
 
 DROP TABLE IF EXISTS `attendances`;
@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS `attendances` (
   `work_date` date NOT NULL,
   `check_in_time` time DEFAULT NULL,
   `check_out_time` time DEFAULT NULL,
+  `status` enum('ON_TIME','LATE','ABSENT','EXCUSED') COLLATE utf8mb4_unicode_ci DEFAULT 'ABSENT',
   PRIMARY KEY (`id`),
   KEY `staff_id` (`staff_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -41,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `attendances` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `bookings`
+-- Table structure for table `bookings`
 --
 
 DROP TABLE IF EXISTS `bookings`;
@@ -70,7 +71,7 @@ CREATE TABLE IF NOT EXISTS `bookings` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `booking_services`
+-- Table structure for table `booking_services`
 --
 
 DROP TABLE IF EXISTS `booking_services`;
@@ -78,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `booking_services` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `booking_id` bigint(20) NOT NULL,
   `service_id` bigint(20) NOT NULL,
-  `price_at_booking` decimal(10,2) NOT NULL,
+  `price_at_booking` double NOT NULL,
   PRIMARY KEY (`id`),
   KEY `booking_id` (`booking_id`),
   KEY `service_id` (`service_id`)
@@ -87,7 +88,7 @@ CREATE TABLE IF NOT EXISTS `booking_services` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `branches`
+-- Table structure for table `branches`
 --
 
 DROP TABLE IF EXISTS `branches`;
@@ -107,7 +108,7 @@ CREATE TABLE IF NOT EXISTS `branches` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `categories`
+-- Table structure for table `categories`
 --
 
 DROP TABLE IF EXISTS `categories`;
@@ -119,12 +120,19 @@ CREATE TABLE IF NOT EXISTS `categories` (
   `is_deleted` tinyint(1) DEFAULT '0',
   `is_active` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`id`, `name`, `type`, `created_at`, `is_deleted`, `is_active`) VALUES
+(1, 'Aaaaaa', 'SERVICE', '2026-06-09 10:02:56', 0, 1);
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `commission_logs`
+-- Table structure for table `commission_logs`
 --
 
 DROP TABLE IF EXISTS `commission_logs`;
@@ -142,7 +150,37 @@ CREATE TABLE IF NOT EXISTS `commission_logs` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `hairstyles`
+-- Table structure for table `customers`
+--
+
+DROP TABLE IF EXISTS `customers`;
+CREATE TABLE IF NOT EXISTS `customers` (
+  `user_id` bigint(20) NOT NULL,
+  `points` int(11) DEFAULT '0',
+  `member_tier` enum('NEW','SILVER','GOLD','DIAMOND') COLLATE utf8mb4_unicode_ci DEFAULT 'NEW',
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `employees`
+--
+
+DROP TABLE IF EXISTS `employees`;
+CREATE TABLE IF NOT EXISTS `employees` (
+  `user_id` bigint(20) NOT NULL,
+  `branch_id` bigint(20) DEFAULT NULL,
+  `base_salary` decimal(15,2) DEFAULT '0.00',
+  `commission_rate` decimal(5,2) DEFAULT '0.00',
+  PRIMARY KEY (`user_id`),
+  KEY `employees_ibfk_1` (`branch_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hairstyles`
 --
 
 DROP TABLE IF EXISTS `hairstyles`;
@@ -161,7 +199,7 @@ CREATE TABLE IF NOT EXISTS `hairstyles` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `hairstyle_services`
+-- Table structure for table `hairstyle_services`
 --
 
 DROP TABLE IF EXISTS `hairstyle_services`;
@@ -175,7 +213,7 @@ CREATE TABLE IF NOT EXISTS `hairstyle_services` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `invoices`
+-- Table structure for table `invoices`
 --
 
 DROP TABLE IF EXISTS `invoices`;
@@ -197,7 +235,7 @@ CREATE TABLE IF NOT EXISTS `invoices` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `invoice_items`
+-- Table structure for table `invoice_items`
 --
 
 DROP TABLE IF EXISTS `invoice_items`;
@@ -209,6 +247,8 @@ CREATE TABLE IF NOT EXISTS `invoice_items` (
   `quantity` int(11) NOT NULL DEFAULT '1',
   `unit_price` decimal(10,2) NOT NULL,
   `subtotal` decimal(10,2) NOT NULL,
+  `staff_id` bigint(20) DEFAULT NULL,
+  `commission_amount` decimal(10,2) DEFAULT '0.00',
   PRIMARY KEY (`id`),
   KEY `invoice_id` (`invoice_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -216,7 +256,7 @@ CREATE TABLE IF NOT EXISTS `invoice_items` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `lookbook_items`
+-- Table structure for table `lookbook_items`
 --
 
 DROP TABLE IF EXISTS `lookbook_items`;
@@ -225,7 +265,7 @@ CREATE TABLE IF NOT EXISTS `lookbook_items` (
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text COLLATE utf8mb4_unicode_ci,
   `image_url` varchar(512) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `gender` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `gender` enum('MALE','FEMALE','UNISEX') COLLATE utf8mb4_unicode_ci NOT NULL,
   `prompt` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `hairstyle_id` bigint(20) DEFAULT NULL,
   `is_active` tinyint(1) DEFAULT '1',
@@ -239,7 +279,7 @@ CREATE TABLE IF NOT EXISTS `lookbook_items` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `notifications`
+-- Table structure for table `notifications`
 --
 
 DROP TABLE IF EXISTS `notifications`;
@@ -257,7 +297,7 @@ CREATE TABLE IF NOT EXISTS `notifications` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `otp_tokens`
+-- Table structure for table `otp_tokens`
 --
 
 DROP TABLE IF EXISTS `otp_tokens`;
@@ -274,7 +314,7 @@ CREATE TABLE IF NOT EXISTS `otp_tokens` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `payrolls`
+-- Table structure for table `payrolls`
 --
 
 DROP TABLE IF EXISTS `payrolls`;
@@ -295,7 +335,7 @@ CREATE TABLE IF NOT EXISTS `payrolls` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `products`
+-- Table structure for table `products`
 --
 
 DROP TABLE IF EXISTS `products`;
@@ -304,7 +344,7 @@ CREATE TABLE IF NOT EXISTS `products` (
   `category_id` bigint(20) DEFAULT NULL,
   `branch_id` bigint(20) DEFAULT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `price` decimal(10,2) NOT NULL,
+  `price` double NOT NULL,
   `stock_quantity` int(11) DEFAULT '0',
   `is_deleted` tinyint(1) DEFAULT '0',
   `is_active` tinyint(1) DEFAULT '1',
@@ -316,7 +356,7 @@ CREATE TABLE IF NOT EXISTS `products` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `reviews`
+-- Table structure for table `reviews`
 --
 
 DROP TABLE IF EXISTS `reviews`;
@@ -337,7 +377,7 @@ CREATE TABLE IF NOT EXISTS `reviews` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `services`
+-- Table structure for table `services`
 --
 
 DROP TABLE IF EXISTS `services`;
@@ -345,7 +385,7 @@ CREATE TABLE IF NOT EXISTS `services` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `category_id` bigint(20) DEFAULT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `price` decimal(10,2) NOT NULL,
+  `price` double NOT NULL,
   `duration_minutes` int(11) NOT NULL,
   `image_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_deleted` tinyint(1) DEFAULT '0',
@@ -357,7 +397,7 @@ CREATE TABLE IF NOT EXISTS `services` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `shifts`
+-- Table structure for table `shifts`
 --
 
 DROP TABLE IF EXISTS `shifts`;
@@ -367,6 +407,8 @@ CREATE TABLE IF NOT EXISTS `shifts` (
   `work_date` date NOT NULL,
   `start_time` time NOT NULL,
   `end_time` time NOT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1: Ca làm việc hoạt động, 0: Ca làm việc tạm hủy',
+  `shift_date` date NOT NULL,
   PRIMARY KEY (`id`),
   KEY `staff_id` (`staff_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -374,7 +416,7 @@ CREATE TABLE IF NOT EXISTS `shifts` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `users`
+-- Table structure for table `users`
 --
 
 DROP TABLE IF EXISTS `users`;
@@ -384,29 +426,22 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `full_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `role` enum('ADMIN','MANAGER','STAFF','CUSTOMER','GUEST') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `branch_id` bigint(20) DEFAULT NULL,
-  `points` int(11) DEFAULT '0',
-  `member_tier` enum('NEW','SILVER','GOLD','DIAMOND') COLLATE utf8mb4_unicode_ci DEFAULT 'NEW',
-  `commission_rate` decimal(5,2) DEFAULT '0.00',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `is_deleted` tinyint(1) DEFAULT '0',
-  `is_active` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `phone` (`phone`),
-  KEY `branch_id` (`branch_id`)
+  UNIQUE KEY `phone` (`phone`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `users`
+-- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `phone`, `password`, `full_name`, `role`, `branch_id`, `points`, `member_tier`, `commission_rate`, `created_at`, `is_deleted`, `is_active`) VALUES
-(1, '0999999999', '$2a$10$1UlgzPwu7D6xWPwEdVjjNubZal5QwAquoc6HlN.IvrhS/XEJoP8f.', 'Super Admin', 'ADMIN', NULL, 0, 'NEW', '0.00', '2026-06-08 11:03:39', 0, 1);
+INSERT INTO `users` (`id`, `phone`, `password`, `full_name`, `role`, `created_at`) VALUES
+(1, '0999999999', '$2a$10$1UlgzPwu7D6xWPwEdVjjNubZal5QwAquoc6HlN.IvrhS/XEJoP8f.', 'Super Admin', 'ADMIN', '2026-06-08 11:03:39');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `user_ai_styles`
+-- Table structure for table `user_ai_styles`
 --
 
 DROP TABLE IF EXISTS `user_ai_styles`;
@@ -416,7 +451,7 @@ CREATE TABLE IF NOT EXISTS `user_ai_styles` (
   `lookbook_item_id` bigint(20) NOT NULL,
   `source_image_url` varchar(512) COLLATE utf8mb4_unicode_ci NOT NULL,
   `result_image_url` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('PENDING','PROCESSING','SUCCESS','FAILED') COLLATE utf8mb4_unicode_ci NOT NULL,
   `error_message` text COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `completed_at` timestamp NULL DEFAULT NULL,
@@ -427,17 +462,17 @@ CREATE TABLE IF NOT EXISTS `user_ai_styles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Các ràng buộc cho các bảng đã đổ
+-- Constraints for dumped tables
 --
 
 --
--- Các ràng buộc cho bảng `attendances`
+-- Constraints for table `attendances`
 --
 ALTER TABLE `attendances`
   ADD CONSTRAINT `attendances_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `bookings`
+-- Constraints for table `bookings`
 --
 ALTER TABLE `bookings`
   ADD CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`),
@@ -446,28 +481,41 @@ ALTER TABLE `bookings`
   ADD CONSTRAINT `bookings_ibfk_4` FOREIGN KEY (`hairstyle_id`) REFERENCES `hairstyles` (`id`) ON DELETE SET NULL;
 
 --
--- Các ràng buộc cho bảng `booking_services`
+-- Constraints for table `booking_services`
 --
 ALTER TABLE `booking_services`
   ADD CONSTRAINT `booking_services_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `booking_services_ibfk_2` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`);
 
 --
--- Các ràng buộc cho bảng `commission_logs`
+-- Constraints for table `commission_logs`
 --
 ALTER TABLE `commission_logs`
   ADD CONSTRAINT `commission_logs_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `commission_logs_ibfk_2` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `hairstyle_services`
+-- Constraints for table `customers`
+--
+ALTER TABLE `customers`
+  ADD CONSTRAINT `customers_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `employees`
+--
+ALTER TABLE `employees`
+  ADD CONSTRAINT `employees_ibfk_1` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `employees_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `hairstyle_services`
 --
 ALTER TABLE `hairstyle_services`
   ADD CONSTRAINT `hairstyle_services_ibfk_1` FOREIGN KEY (`hairstyle_id`) REFERENCES `hairstyles` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `hairstyle_services_ibfk_2` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `invoices`
+-- Constraints for table `invoices`
 --
 ALTER TABLE `invoices`
   ADD CONSTRAINT `invoices_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`),
@@ -475,38 +523,38 @@ ALTER TABLE `invoices`
   ADD CONSTRAINT `invoices_ibfk_3` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`);
 
 --
--- Các ràng buộc cho bảng `invoice_items`
+-- Constraints for table `invoice_items`
 --
 ALTER TABLE `invoice_items`
   ADD CONSTRAINT `invoice_items_ibfk_1` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `lookbook_items`
+-- Constraints for table `lookbook_items`
 --
 ALTER TABLE `lookbook_items`
   ADD CONSTRAINT `fk_lookbook_hairstyle` FOREIGN KEY (`hairstyle_id`) REFERENCES `hairstyles` (`id`) ON DELETE SET NULL;
 
 --
--- Các ràng buộc cho bảng `notifications`
+-- Constraints for table `notifications`
 --
 ALTER TABLE `notifications`
   ADD CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `payrolls`
+-- Constraints for table `payrolls`
 --
 ALTER TABLE `payrolls`
   ADD CONSTRAINT `payrolls_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `products`
+-- Constraints for table `products`
 --
 ALTER TABLE `products`
   ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `products_ibfk_2` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `reviews`
+-- Constraints for table `reviews`
 --
 ALTER TABLE `reviews`
   ADD CONSTRAINT `reviews_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE,
@@ -514,25 +562,19 @@ ALTER TABLE `reviews`
   ADD CONSTRAINT `reviews_ibfk_3` FOREIGN KEY (`customer_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
--- Các ràng buộc cho bảng `services`
+-- Constraints for table `services`
 --
 ALTER TABLE `services`
   ADD CONSTRAINT `services_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL;
 
 --
--- Các ràng buộc cho bảng `shifts`
+-- Constraints for table `shifts`
 --
 ALTER TABLE `shifts`
   ADD CONSTRAINT `shifts_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `users`
---
-ALTER TABLE `users`
-  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL;
-
---
--- Các ràng buộc cho bảng `user_ai_styles`
+-- Constraints for table `user_ai_styles`
 --
 ALTER TABLE `user_ai_styles`
   ADD CONSTRAINT `fk_ai_style_lookbook` FOREIGN KEY (`lookbook_item_id`) REFERENCES `lookbook_items` (`id`),

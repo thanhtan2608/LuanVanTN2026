@@ -1,4 +1,4 @@
-package org.example.lv_be.module.users.application.interfaces;
+package org.example.lv_be.module.users.application.interfaces.out;
 
 public interface ISmsService {
     /**

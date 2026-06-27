@@ -10,4 +10,5 @@ public class ProductResponse {
     private double price;
     private int stockQuantity;
     private boolean active;
+    private String imageUrl;
 }

@@ -11,22 +11,20 @@ import java.util.List;
 public class CustomUserDetails implements UserDetails {
 
     // CHỈ CHỨA CÁC KIỂU DỮ LIỆU CƠ BẢN (Primitive Types)
-    // Tuyệt đối không lưu giữ trực tiếp đối tượng User (Domain Entity) ở đây
     private final String phone;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
     private final boolean isAccountNonLocked;
-    private final boolean isEnabled;
 
     // Hàm khởi tạo đóng vai trò như một Mapper
-    // Biến dữ liệu từ Domain User thành ngôn ngữ mà Spring Security hiểu
     public CustomUserDetails(User user) {
         this.phone = user.getPhone();
         this.password = user.getPassword();
         // Spring Security bắt buộc quyền phải có chữ "ROLE_" đứng trước
         this.authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+
+        // Dùng cờ isActive để kiểm soát việc tài khoản có bị khóa hay không
         this.isAccountNonLocked = user.isActive();
-        this.isEnabled = !user.isDeleted();
     }
 
     @Override
@@ -61,6 +59,8 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return isEnabled;
+        // Vì đã bỏ isDeleted, tài khoản mặc định luôn enable (tồn tại),
+        // việc chặn đăng nhập sẽ do hàm isAccountNonLocked() đảm nhiệm.
+        return true;
     }
 }

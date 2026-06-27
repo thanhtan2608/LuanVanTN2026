@@ -36,4 +36,7 @@ public class ProductJpaEntity {
 
     @Column(name = "is_active")
     private boolean active = true;
+
+    @Column(name = "image_url")
+    private String imageUrl;
 }

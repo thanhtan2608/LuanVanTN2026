@@ -39,26 +39,23 @@ public class UserRepositoryImpl implements IUserRepository {
     }
 
     @Override
-    public List<User> findByRoleIn(List<Role> roles) {
-        return jpaRepository.findByRoleIn(roles).stream()
+    public List<User> findByRole(Role role) {
+        // Đổi tên hàm findByRoleIn thành findByRole hoặc tự tùy chỉnh theo IUserRepository của bạn
+        return jpaRepository.findByRole(role).stream()
                 .map(this::toDomain)
                 .toList();
     }
 
     @Override
-    public Optional<User> findByPhoneIncludingDeleted(String phone) {
-        return jpaRepository.findByPhoneIncludingDeleted(phone).map(this::toDomain);
-    }
-
-    // Đã sửa tham số từ String thành Enum Role để khớp với Entity của bạn
-    @Override
-    public List<User> findActiveStaffsByRole(Role role) {
+    public List<User> findActiveUsersByRole(Role role) {
         return jpaRepository.findByRoleAndIsActiveTrue(role).stream()
                 .map(this::toDomain)
-                .toList(); // Dùng .toList() cho đồng bộ với hàm findByRoleIn ở trên
+                .toList();
     }
 
-    // Giữ lại hàm mapper toDomain đầy đủ của bạn, xóa bỏ hàm bị trùng
+    // ==========================================
+    // MAPPER ĐÃ ĐƯỢC LÀM SẠCH (Chỉ chứa thuộc tính cốt lõi)
+    // ==========================================
     private User toDomain(UserJpaEntity entity) {
         if (entity == null) return null;
         return User.builder()
@@ -67,11 +64,6 @@ public class UserRepositoryImpl implements IUserRepository {
                 .password(entity.getPassword())
                 .fullName(entity.getFullName())
                 .role(entity.getRole())
-                .branchId(entity.getBranchId())
-                .points(entity.getPoints())
-                .memberTier(entity.getMemberTier())
-                .commissionRate(entity.getCommissionRate())
-                .isDeleted(entity.isDeleted())
                 .isActive(entity.isActive())
                 .createdAt(entity.getCreatedAt())
                 .build();
@@ -85,11 +77,6 @@ public class UserRepositoryImpl implements IUserRepository {
                 .password(domain.getPassword())
                 .fullName(domain.getFullName())
                 .role(domain.getRole())
-                .branchId(domain.getBranchId())
-                .points(domain.getPoints())
-                .memberTier(domain.getMemberTier())
-                .commissionRate(domain.getCommissionRate())
-                .isDeleted(domain.isDeleted())
                 .isActive(domain.isActive())
                 .createdAt(domain.getCreatedAt())
                 .build();

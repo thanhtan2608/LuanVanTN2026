@@ -1,51 +1,37 @@
 package org.example.lv_be.module.users.presentation.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.example.lv_be.core.response.ApiResponse;
 import org.example.lv_be.module.users.application.dto.UserProfileResponse;
-import org.example.lv_be.module.users.domain.entity.User;
-import org.example.lv_be.module.users.domain.repository.IUserRepository;
+import org.example.lv_be.module.users.application.interfaces.in.IGetUserProfileUseCase;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/v1/users/profile")
+@RequestMapping("/api/v1/profiles")
 @RequiredArgsConstructor
 public class UserProfileController {
 
-    private final IUserRepository userRepository;
+    private final IGetUserProfileUseCase getUserProfileUseCase;
 
     /**
-     * 📘 FRONTEND NOTE: LẤY THÔNG TIN HỒ SƠ, ĐIỂM SỐ VÀ HẠNG THÀNH VIÊN
-     * ------------------------------------------------------------------------
-     * 🔹 METHOD: GET
-     * 🔹 URL: /api/v1/users/profile/me
-     * 🔹 HEADER: Authorization: Bearer {token_của_khách_hàng}
-     * 🔹 LOGIC: Backend tự động bóc tách Token để biết user nào đang đăng nhập,
-     * từ đó trả về đúng điểm và hạng của user đó.
+     * [DÀNH CHO FRONTEND] API Lấy thông tin cá nhân của phiên đăng nhập hiện tại
+     * - Method: GET
+     * - Header: Authorization: Bearer <Token>
+     * - Xử lý FE: Gọi API này ngay khi App load hoặc F5 trang (với token còn hạn).
+     * Nếu trả về 401/403 -> Xóa local storage và đá về trang /login.
+     * Nếu trả về 200 -> Lấy 'points' hoặc 'baseSalary' để hiển thị UI tùy Role.
      */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UserProfileResponse>> getMyProfile() {
+    public ResponseEntity<UserProfileResponse> getMyProfile(Principal principal) {
+        // Lấy định danh (thường là SĐT) từ Principal do Spring Security trích xuất từ JWT Token
+        String phone = principal.getName();
 
-        // 1. Lấy Username/Phone từ JWT Token hiện tại
-        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        // Gọi Use Case xử lý logic lấy thông tin từ DB (tự động phân loại Customer/Employee)
+        UserProfileResponse response = getUserProfileUseCase.execute(phone);
 
-        // 2. Query DB lấy dữ liệu (Nên dùng UseCase, ở đây mình viết tắt qua Repo để bạn dễ hình dung)
-        User user = userRepository.findByPhone(currentUsername)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin tài khoản"));
-
-        // 3. Map sang DTO trả về cho Frontend
-        UserProfileResponse response = UserProfileResponse.builder()
-                .id(user.getId())
-                .fullName(user.getFullName())
-                .phone(user.getPhone())
-                .points(user.getPoints())
-                .memberTier(user.getMemberTier())
-                .build();
-
-        return ResponseEntity.ok(ApiResponse.success(response, "Lấy hồ sơ và điểm thành công!"));
+        // Trả về data kèm HTTP Status 200 (OK)
+        return ResponseEntity.ok(response);
     }
 }

@@ -5,7 +5,7 @@ import org.example.lv_be.core.exception.AppException;
 import org.example.lv_be.module.ailookbook.application.dto.CreateLookbookRequest;
 import org.example.lv_be.module.ailookbook.application.dto.LookbookResponse;
 import org.example.lv_be.module.ailookbook.application.interfaces.ICreateLookbookUseCase;
-import org.example.lv_be.module.ailookbook.application.interfaces.external.ICloudStorageService;
+import org.example.lv_be.core.storage.ICloudStorageService;
 import org.example.lv_be.module.ailookbook.application.mappers.LookbookMapper;
 import org.example.lv_be.module.ailookbook.domain.entity.LookbookItem;
 import org.example.lv_be.module.ailookbook.domain.enums.GenderCategory;

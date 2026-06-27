@@ -1,4 +1,4 @@
-package org.example.lv_be.module.ailookbook.application.interfaces.external;
+package org.example.lv_be.core.storage;
 
 import org.springframework.web.multipart.MultipartFile;
 

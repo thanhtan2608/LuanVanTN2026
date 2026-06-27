@@ -9,8 +9,10 @@ import org.example.lv_be.module.catalog.application.dto.product.ReplenishStockRe
 import org.example.lv_be.module.catalog.application.dto.product.UpdateProductRequest;
 import org.example.lv_be.module.catalog.application.interfaces.product.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -49,9 +51,11 @@ public class AdminProductController {
      * "stockQuantity": 50 // Số lượng hàng tồn kho ban đầu khi mở tiệm
      * }
      */
-    @PostMapping
-    public ResponseEntity<ApiResponse<ProductResponse>> createProduct(@Valid @RequestBody CreateProductRequest request) {
-        ProductResponse data = createProductUseCase.execute(request);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<ProductResponse>> createProduct(
+            @Valid @RequestPart("data") CreateProductRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+        ProductResponse data = createProductUseCase.execute(request, imageFile);
         return ResponseEntity.ok(ApiResponse.success(data, "Khai báo sản phẩm mới vào kho thành công!"));
     }
 
@@ -61,11 +65,12 @@ public class AdminProductController {
      * 🔹 METHOD: PUT
      * 🔹 URL CHUẨN: /api/v1/admin/products/{id}
      */
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ProductResponse>> updateProduct(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateProductRequest request) {
-        ProductResponse data = updateProductUseCase.execute(id, request);
+            @Valid @RequestPart("data") UpdateProductRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+        ProductResponse data = updateProductUseCase.execute(id, request, imageFile);
         return ResponseEntity.ok(ApiResponse.success(data, "Cập nhật dữ liệu sản phẩm thành công!"));
     }
 

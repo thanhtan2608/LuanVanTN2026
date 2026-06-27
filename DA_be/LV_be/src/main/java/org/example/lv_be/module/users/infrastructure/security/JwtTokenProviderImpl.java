@@ -2,7 +2,7 @@ package org.example.lv_be.module.users.infrastructure.security;
 
 import lombok.RequiredArgsConstructor;
 import org.example.lv_be.core.security.JwtUtil;
-import org.example.lv_be.module.users.application.interfaces.ITokenProvider;
+import org.example.lv_be.module.users.application.interfaces.out.ITokenProvider;
 import org.example.lv_be.module.users.domain.entity.User;
 import org.springframework.stereotype.Component;
 

@@ -8,4 +8,5 @@ public interface IOtpTokenRepository {
     Optional<OtpToken> findByPhoneAndOtpCodeAndIsUsedFalse(String phone, String otpCode);
 
     OtpToken save(OtpToken otpToken);
+    void invalidateAllTokensForPhone(String phone);
 }

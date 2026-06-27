@@ -3,7 +3,7 @@ package org.example.lv_be.module.billing.infrastructure.external.communication;
 import lombok.RequiredArgsConstructor;
 import org.example.lv_be.module.billing.application.interfaces.out.IUsersClient;
 // Import UseCase của module Users
-import org.example.lv_be.module.users.application.interfaces.IUpdateUserPointsUseCase;
+import org.example.lv_be.module.users.application.interfaces.in.IUpdateUserPointsUseCase;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;

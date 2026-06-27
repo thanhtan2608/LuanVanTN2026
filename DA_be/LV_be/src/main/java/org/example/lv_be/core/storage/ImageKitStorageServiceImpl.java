@@ -1,8 +1,7 @@
-package org.example.lv_be.module.ailookbook.infrastructure.external.storage;
+package org.example.lv_be.core.storage;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.lv_be.module.ailookbook.application.interfaces.external.ICloudStorageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -45,7 +44,12 @@ public class ImageKitStorageServiceImpl implements ICloudStorageService {
 
             // 2. Đóng gói dữ liệu Form-data
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("file", file.getResource()); // File nhị phân
+            body.add("file", new org.springframework.core.io.ByteArrayResource(file.getBytes()) {
+                @Override
+                public String getFilename() {
+                    return file.getOriginalFilename(); // Rất quan trọng để ImageKit nhận diện định dạng (jpg, png)
+                }
+            }); // File nhị phân
             body.add("fileName", System.currentTimeMillis() + "_" + file.getOriginalFilename());
             body.add("folder", folderName);
             body.add("useUniqueFileName", "true");

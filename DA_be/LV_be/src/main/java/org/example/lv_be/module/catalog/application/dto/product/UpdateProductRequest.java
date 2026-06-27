@@ -11,4 +11,5 @@ public class UpdateProductRequest {
     @Min(value = 0, message = "Giá bán không được âm")
     private double price;
     private boolean active;
+    private String imageUrl;
 }

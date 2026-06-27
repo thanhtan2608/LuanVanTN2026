@@ -1,7 +1,7 @@
 package org.example.lv_be.module.catalog.application.services.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.lv_be.module.ailookbook.application.interfaces.external.ICloudStorageService;
+import org.example.lv_be.core.storage.ICloudStorageService;
 import org.example.lv_be.module.catalog.application.dto.service.CreateServiceRequest;
 import org.example.lv_be.module.catalog.application.dto.service.ServiceResponse;
 import org.example.lv_be.module.catalog.application.interfaces.service.ICreateServiceUseCase;

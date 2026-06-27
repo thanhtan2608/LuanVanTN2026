@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface UserSpringJpaRepository extends JpaRepository<UserJpaEntity, Long> {
     Optional<UserJpaEntity> findByPhone(String phone);
     boolean existsByPhone(String phone);
-    List<UserJpaEntity> findByRoleIn(List<Role> roles);
+    List<UserJpaEntity> findByRole(Role role);
     @Query(value = "SELECT * FROM users WHERE phone = :phone", nativeQuery = true)
     Optional<UserJpaEntity> findByPhoneIncludingDeleted(@Param("phone") String phone);
     List<UserJpaEntity> findByRoleAndIsActiveTrue(Role role);

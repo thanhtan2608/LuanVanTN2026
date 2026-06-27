@@ -7,7 +7,7 @@ import org.example.lv_be.module.ailookbook.application.dto.AiStyleResponse;
 import org.example.lv_be.module.ailookbook.application.dto.AiTryOnRequest;
 import org.example.lv_be.module.ailookbook.application.interfaces.IRequestAiTryOnUseCase;
 import org.example.lv_be.module.ailookbook.application.interfaces.external.IAiEngineService;
-import org.example.lv_be.module.ailookbook.application.interfaces.external.ICloudStorageService;
+import org.example.lv_be.core.storage.ICloudStorageService;
 import org.example.lv_be.module.ailookbook.application.mappers.UserAiStyleMapper;
 import org.example.lv_be.module.ailookbook.domain.entity.LookbookItem;
 import org.example.lv_be.module.ailookbook.domain.entity.UserAiStyle;

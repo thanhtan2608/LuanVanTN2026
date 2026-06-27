@@ -1,7 +1,7 @@
 package org.example.lv_be.module.hairstyles.application.services;
 
 import lombok.RequiredArgsConstructor;
-import org.example.lv_be.module.ailookbook.application.interfaces.external.ICloudStorageService;
+import org.example.lv_be.core.storage.ICloudStorageService;
 import org.example.lv_be.module.hairstyles.application.dto.CreateHairstyleRequest;
 import org.example.lv_be.module.hairstyles.application.dto.HairstyleResponse;
 import org.example.lv_be.module.hairstyles.application.interfaces.ICreateHairstyleUseCase;

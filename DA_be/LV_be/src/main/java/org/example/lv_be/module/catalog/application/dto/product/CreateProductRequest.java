@@ -14,4 +14,5 @@ public class CreateProductRequest {
     private double price;
     @Min(value = 0, message = "Số lượng nhập kho ban đầu không được âm")
     private int stockQuantity;
+    private String imageUrl;
 }
