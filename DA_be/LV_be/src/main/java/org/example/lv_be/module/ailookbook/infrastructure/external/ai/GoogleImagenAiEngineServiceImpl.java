@@ -22,7 +22,7 @@ public class GoogleImagenAiEngineServiceImpl implements IAiEngineService {
     @Value("${app.ai.google.api-key}")
     private String googleApiKey;
 
-    private static final String GOOGLE_IMAGEN_URL = "https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:generateImages";
+    private static final String GOOGLE_IMAGEN_URL = "https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict";
 
     @Override
     public String generateHairStyle(String sourceImageUrl, String promptCommand) {
@@ -51,17 +51,18 @@ public class GoogleImagenAiEngineServiceImpl implements IAiEngineService {
                     + promptCommand
                     + ". Mandatory constraints: Keep the exact same face identity, eyes, nose, mouth, facial features, expression, head posture, and background 100% unchanged. Do not alter anything except the hairstyle. High quality, realistic hair texture, photorealistic.";
 
-            Map<String, Object> inlineData = Map.of(
-                    "mimeType", "image/png",
-                    "data", base64Image
+            Map<String, Object> imageObj = Map.of("bytesBase64Encoded", base64Image);
+            Map<String, Object> instance = Map.of(
+                    "prompt", tốiƯuPrompt,
+                    "image", imageObj
             );
 
             Map<String, Object> requestBody = Map.of(
-                    "prompt", tốiƯuPrompt,
-                    "numberOfImages", 1,
-                    "aspectRatio", "1:1",
-                    "outputMimeType", "image/jpeg",
-                    "imageContext", Map.of("inputImage", inlineData)
+                    "instances", List.of(instance),
+                    "parameters", Map.of(
+                            "sampleCount", 1,
+                            "personGeneration", "ALLOW_ADULT"
+                    )
             );
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
@@ -74,10 +75,10 @@ public class GoogleImagenAiEngineServiceImpl implements IAiEngineService {
             Map<String, Object> responseBody = response.getBody();
 
             // BƯỚC 5: Trả ảnh kết quả dạng Base64 Data URL cho Frontend
-            if (responseBody != null && responseBody.containsKey("generatedImages")) {
-                var generatedImages = (List<Map<String, Object>>) responseBody.get("generatedImages");
-                if (!generatedImages.isEmpty()) {
-                    String resultBase64 = generatedImages.get(0).get("image").toString();
+            if (responseBody != null && responseBody.containsKey("predictions")) {
+                var predictions = (List<Map<String, Object>>) responseBody.get("predictions");
+                if (!predictions.isEmpty()) {
+                    String resultBase64 = predictions.get(0).get("bytesBase64Encoded").toString();
                     log.info("=== GOOGLE AI HOÀN THÀNH XỬ LÝ KIỂU TÓC THÀNH CÔNG! ===");
                     return "data:image/jpeg;base64," + resultBase64;
                 }

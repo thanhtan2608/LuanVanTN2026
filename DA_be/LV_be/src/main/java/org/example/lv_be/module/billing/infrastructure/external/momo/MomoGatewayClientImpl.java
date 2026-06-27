@@ -2,6 +2,7 @@ package org.example.lv_be.module.billing.infrastructure.external.momo;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.lv_be.module.billing.application.dto.request.MomoIpnCallbackRequest;
 import org.example.lv_be.module.billing.application.interfaces.out.IMomoGatewayClient;
 import org.example.lv_be.module.billing.domain.entity.Invoice;
 import org.springframework.http.HttpEntity;
@@ -94,6 +95,27 @@ public class MomoGatewayClientImpl implements IMomoGatewayClient {
     public boolean verifySignature(String signature, String rawHashData) {
         String computedHash = generateHmacSHA256(rawHashData, momoConfig.getSecretKey());
         return computedHash.equals(signature);
+    }
+
+    @Override
+    public boolean verifyIpnSignature(MomoIpnCallbackRequest request) {
+        // Build raw signature according to MoMo IPN spec
+        String rawHashData = "accessKey=" + momoConfig.getAccessKey() +
+                "&amount=" + request.getAmount() +
+                "&extraData=" + request.getExtraData() +
+                "&message=" + request.getMessage() +
+                "&orderId=" + request.getOrderId() +
+                "&orderInfo=" + request.getOrderInfo() +
+                "&orderType=" + request.getOrderType() +
+                "&partnerCode=" + request.getPartnerCode() +
+                "&payType=" + request.getPayType() +
+                "&requestId=" + request.getRequestId() +
+                "&responseTime=" + request.getResponseTime() +
+                "&resultCode=" + request.getResultCode() +
+                "&transId=" + request.getTransId();
+
+        String computedHash = generateHmacSHA256(rawHashData, momoConfig.getSecretKey());
+        return computedHash.equals(request.getSignature());
     }
 
     /**

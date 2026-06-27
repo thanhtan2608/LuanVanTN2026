@@ -8,4 +8,7 @@ public interface IMomoGatewayClient {
 
     // Thuật toán mã hóa HMAC SHA256 kiểm tra request có đúng của Momo gửi không
     boolean verifySignature(String signature, String rawHashData);
+
+    // Xác thực IPN Callback
+    boolean verifyIpnSignature(org.example.lv_be.module.billing.application.dto.request.MomoIpnCallbackRequest request);
 }

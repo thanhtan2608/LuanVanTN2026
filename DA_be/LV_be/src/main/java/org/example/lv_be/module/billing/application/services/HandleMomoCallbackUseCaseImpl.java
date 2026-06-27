@@ -29,9 +29,7 @@ public class HandleMomoCallbackUseCaseImpl implements IHandleMomoCallbackUseCase
     @Transactional
     public void execute(MomoIpnCallbackRequest request) {
         // 1. Verify chữ ký điện tử (Chống giả mạo)
-        // Lưu ý: Chuỗi rawHashData thực tế phải ghép từ các trường theo tài liệu Momo
-        String rawHashData = "accessKey=...&amount=" + request.getAmount() + "&extraData=" + request.getExtraData();
-        if (!momoClient.verifySignature(request.getSignature(), rawHashData)) {
+        if (!momoClient.verifyIpnSignature(request)) {
             throw new RuntimeException("Chữ ký Momo không hợp lệ! Nghi ngờ Request giả mạo.");
         }
 
